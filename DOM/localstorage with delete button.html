@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details App</title>
+</head>
+
+<body>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="userList">
+        <!-- User details will be displayed here -->
+    </div>
+
+    <script>
+        // Get the form element
+        const form = document.getElementById('userForm');
+        const userList = document.getElementById('userList');
+
+        // Add event listener for form submission
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get user input values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            // Create an object to store user details
+            const userDetails = {
+                name: name,
+                email: email
+            };
+
+            // Get existing user details from local storage or create an empty array if it doesn't exist
+            const existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+
+            // Add a new user to the array
+            existingUsers.push(userDetails);
+
+            // Store the updated array back in local storage
+            localStorage.setItem('userDetails', JSON.stringify(existingUsers));
+
+            // Display user details and add delete buttons
+            displayUserDetails(existingUsers);
+        });
+
+        // Function to display user details and add delete buttons
+        function displayUserDetails(users) {
+            userList.innerHTML = '';
+            users.forEach(function (user, index) {
+                const userDiv = document.createElement('div');
+                userDiv.innerHTML = `<p>Name: ${user.name}, Email: ${user.email} <button onclick="deleteUser(${index})">Delete</button></p>`;
+                userList.appendChild(userDiv);
+            });
+        }
+
+        // Function to delete a user from the array and update local storage
+        function deleteUser(index) {
+            const users = JSON.parse(localStorage.getItem('userDetails'));
+            users.splice(index, 1);
+            localStorage.setItem('userDetails', JSON.stringify(users));
+            displayUserDetails(users);
+        }
+
+        // Display existing user details when the page loads
+        const existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+        displayUserDetails(existingUsers);
+    </script>
+</body>
+
+</html>

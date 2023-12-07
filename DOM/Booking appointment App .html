@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details Form</title>
+</head>
+
+<body>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        // Get the form element
+        const form = document.getElementById('userForm');
+
+        // Add event listener for form submission
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get user input values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            // Create an object to store user details
+            const userDetails = {
+                name: name,
+                email: email
+            };
+
+            // Convert the object to a JSON string and store it in local storage
+            localStorage.setItem('userDetails', JSON.stringify(userDetails));
+
+            // Optionally, you can provide feedback to the user that the data has been stored
+            alert('User details stored successfully!');
+        });
+    </script>
+</body>
+
+</html>

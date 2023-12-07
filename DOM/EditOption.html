@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details App</title>
+</head>
+
+<body>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+
+        <button type="submit">Submit</button>
+        <button type="button" onclick="clearForm()">Clear</button>
+    </form>
+
+    <div id="userList">
+        <!-- User details will be displayed here -->
+    </div>
+
+    <script>
+        const form = document.getElementById('userForm');
+        const userList = document.getElementById('userList');
+        let editingIndex = -1;
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            const userDetails = {
+                name: name,
+                email: email
+            };
+
+            let existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+
+            if (editingIndex !== -1) {
+                // Editing existing user
+                existingUsers[editingIndex] = userDetails;
+                editingIndex = -1; // Reset editingIndex after editing
+            } else {
+                // Adding a new user
+                existingUsers.push(userDetails);
+            }
+
+            localStorage.setItem('userDetails', JSON.stringify(existingUsers));
+
+            displayUserDetails(existingUsers);
+            clearForm();
+        });
+
+        function displayUserDetails(users) {
+            userList.innerHTML = '';
+            users.forEach(function (user, index) {
+                const userDiv = document.createElement('div');
+                userDiv.innerHTML = `<p>Name: ${user.name}, Email: ${user.email} 
+                                     <button onclick="editUser(${index})">Edit</button>
+                                     <button onclick="deleteUser(${index})">Delete</button></p>`;
+                userList.appendChild(userDiv);
+            });
+        }
+
+        function deleteUser(index) {
+            let users = JSON.parse(localStorage.getItem('userDetails'));
+            users.splice(index, 1);
+            localStorage.setItem('userDetails', JSON.stringify(users));
+            displayUserDetails(users);
+        }
+
+        function editUser(index) {
+            editingIndex = index;
+            const users = JSON.parse(localStorage.getItem('userDetails'));
+            const userToEdit = users[index];
+            document.getElementById('name').value = userToEdit.name;
+            document.getElementById('email').value = userToEdit.email;
+        }
+
+        function clearForm() {
+            form.reset();
+            editingIndex = -1;
+        }
+
+        const existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+        displayUserDetails(existingUsers);
+    </script>
+</body>
+
+</html>
