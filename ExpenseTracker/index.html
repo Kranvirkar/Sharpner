@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-4">
+    <form id="userForm">
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount:</label>
+            <input type="number" class="form-control" id="amount" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="description" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Category:</label>
+            <input type="text" class="form-control" id="category" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+    </form>
+
+    <div id="userList" class="mt-4">
+        <!-- User details will be displayed here -->
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap JavaScript) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const form = document.getElementById('userForm');
+        const userList = document.getElementById('userList');
+        let editingIndex = -1;
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const description = document.getElementById('description').value;
+            const category = document.getElementById('category').value;
+
+            if (amount !== '' && description !== '' && category !== '') {
+                const userDetails = {
+                    amount: amount,
+                    description: description,
+                    category: category
+                };
+
+                let existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+
+                if (editingIndex !== -1) {
+                    // Editing existing user
+                    existingUsers[editingIndex] = userDetails;
+                    editingIndex = -1; // Reset editingIndex after editing
+                } else {
+                    // Adding a new user
+                    existingUsers.push(userDetails);
+                }
+
+                localStorage.setItem('userDetails', JSON.stringify(existingUsers));
+
+                displayUserDetails(existingUsers, userDetails); // Display the latest user details
+                clearForm();
+            }
+        });
+
+        function displayUserDetails(users, latestUser) {
+            userList.innerHTML = '';
+
+            users.forEach(function (user, index) {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'card mb-2';
+                userDiv.innerHTML = `
+                    <div class="card-body">
+                        <p class="card-text">Amount: ${user.amount !== undefined ? user.amount : 'N/A'}</p>
+                        <p class="card-text">Description: ${user.description !== undefined ? user.description : 'N/A'}</p>
+                        <p class="card-text">Category: ${user.category !== undefined ? user.category : 'N/A'}</p>
+                        <button class="btn btn-warning" onclick="editUser(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteUser(${index})">Delete</button>
+                    </div>
+                `;
+                userList.appendChild(userDiv);
+            });
+
+
+            userList.appendChild(successMessage);
+        }
+
+        function deleteUser(index) {
+            let users = JSON.parse(localStorage.getItem('userDetails'));
+            users.splice(index, 1);
+            localStorage.setItem('userDetails', JSON.stringify(users));
+            displayUserDetails(users);
+        }
+
+        function editUser(index) {
+            editingIndex = index;
+            const users = JSON.parse(localStorage.getItem('userDetails'));
+            const userToEdit = users[index];
+            document.getElementById('amount').value = userToEdit.amount !== undefined ? userToEdit.amount : '';
+            document.getElementById('description').value = userToEdit.description !== undefined ? userToEdit.description : '';
+            document.getElementById('category').value = userToEdit.category !== undefined ? userToEdit.category : '';
+        }
+
+        function clearForm() {
+            form.reset();
+            editingIndex = -1;
+        }
+
+        const existingUsers = JSON.parse(localStorage.getItem('userDetails')) || [];
+        displayUserDetails(existingUsers);
+    </script>
+</body>
+
+</html>
