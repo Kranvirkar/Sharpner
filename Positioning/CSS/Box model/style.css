@@ -1,0 +1,6 @@
+.child {
+    border: 1px solid red;
+    width: 33.3%;
+    height: 100px;
+    display: inline-block;
+}
